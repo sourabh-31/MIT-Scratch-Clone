@@ -1,0 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Figtree", sans-serif;
+}
+
+.gradient-text {
+  font-size: 24px; /* Adjust the font size as needed */
+  font-weight: bold; /* Optional: adjust font weight */
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* Gradient colors */
+  -webkit-background-clip: text; /* For WebKit browsers */
+  background-clip: text; /* For other browsers */
+  color: transparent; /* Hide the default text color */
+}

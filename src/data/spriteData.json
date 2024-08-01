@@ -1,0 +1,11 @@
+[
+  {
+    "id": "SCR-SPR-CAT",
+    "name": "Cat",
+    "positionX": 80,
+    "positionY": 200,
+    "size": 100,
+    "direction": 1,
+    "isVisible": true
+  }
+]
