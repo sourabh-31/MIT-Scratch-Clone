@@ -1,20 +1,13 @@
-import { SpritesState } from "@customTypes/sprite.type";
 import { actions } from "@data/actions";
 import { useDragAndDrop } from "@hooks/useDragAndDrop";
 import { useSelectedSprite } from "@hooks/useSelectedSprite";
 import { addHistory, updateSprite } from "@reduxStore/features/spritePropSlice";
-import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
 export default function Code() {
   const { handleDragStart } = useDragAndDrop(() => {});
   const dispatch = useDispatch();
   const selectedSprite = useSelectedSprite();
-  const history = useSelector(
-    (state: { spriteProp: SpritesState }) => state.spriteProp.history,
-  );
-
-  console.log(history);
 
   // Generate random ID
   function generateRandomId() {
