@@ -1,9 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SpritePropType, SpritesState } from "types/sprite.type";
+import { HistoryItem, SpritePropType, SpritesState } from "types/sprite.type";
 
 const initialState: SpritesState = {
-  sprites: [],
-  selectedSprite: "",
+  sprites: [
+    {
+      id: "SCR-SPR-CAT",
+      name: "Cat",
+      positionX: 80,
+      positionY: 200,
+      size: 100,
+      direction: 1,
+      isVisible: true,
+      say: "",
+      duration: 0,
+    },
+  ],
+  selectedSprite: "SCR-SPR-CAT",
+  history: [],
 };
 
 const spritePropSlice = createSlice({
@@ -82,6 +95,13 @@ const spritePropSlice = createSlice({
         sprite.duration = 0;
       }
     },
+    addHistory: (state, action: PayloadAction<HistoryItem>) => {
+      state.history.push(action.payload);
+    },
+
+    clearHistory: (state) => {
+      state.history = [];
+    },
   },
 });
 
@@ -91,6 +111,8 @@ export const {
   updateSprite,
   setPositionX,
   setPositionY,
+  addHistory,
+  clearHistory,
 } = spritePropSlice.actions;
 
 export default spritePropSlice.reducer;

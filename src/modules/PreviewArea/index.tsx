@@ -56,18 +56,26 @@ export default function PreviewArea() {
 
   // Handle sprite move on the preview area
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>): void => {
-    if (isDragging && initialPosition && containerRef.current) {
+    if (
+      isDragging &&
+      initialPosition &&
+      containerRef.current &&
+      dragRef.current
+    ) {
       const containerRect = containerRef.current.getBoundingClientRect();
-      const dragRect = dragRef.current?.getBoundingClientRect();
+      const dragRect = dragRef.current.getBoundingClientRect();
 
       const newX = e.clientX - containerRect.left - initialPosition.x;
       const newY = e.clientY - containerRect.top - initialPosition.y;
 
-      const maxX = containerRect.width - (dragRect?.width || 0);
-      const maxY = containerRect.height - (dragRect?.height || 0);
+      // Allow the sprite to move partially outside the container on all sides
+      const minX = -dragRect.width / 2;
+      const minY = -dragRect.height / 2;
+      const maxX = containerRect.width - dragRect.width / 2;
+      const maxY = containerRect.height - dragRect.height / 2;
 
-      const boundedX = Math.max(0, Math.min(newX, maxX));
-      const boundedY = Math.max(0, Math.min(newY, maxY));
+      const boundedX = Math.max(minX, Math.min(newX, maxX));
+      const boundedY = Math.max(minY, Math.min(newY, maxY));
 
       const roundedX = Math.round(boundedX);
       const roundedY = Math.round(boundedY);
@@ -90,6 +98,7 @@ export default function PreviewArea() {
     return {
       transform: `scale(${scale}) rotate(${rotation}deg)`,
       transformOrigin: rotation !== 0 ? "center" : "top left",
+      transition: "transform 0.2s ease",
     };
   };
 

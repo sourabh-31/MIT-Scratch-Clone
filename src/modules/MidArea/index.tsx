@@ -1,8 +1,9 @@
 import { DraggedElementInfo } from "@customTypes/code.type";
+import { HistoryItem } from "@customTypes/sprite.type";
 import { actions } from "@data/actions";
 import { useDragAndDrop } from "@hooks/useDragAndDrop";
 import { useSelectedSprite } from "@hooks/useSelectedSprite";
-import { updateSprite } from "@reduxStore/features/spritePropSlice";
+import { addHistory, updateSprite } from "@reduxStore/features/spritePropSlice";
 import Icon from "@shared/Icon";
 import Konva from "konva";
 import { useEffect, useRef, useState } from "react";
@@ -25,17 +26,68 @@ interface Box {
   children: Box[];
 }
 
-const INITIAL_STATE: Box[] = [];
+const INITIAL_STATE: Box[] = [
+  {
+    children: [
+      {
+        children: [],
+        content: "when 🚩 clicked",
+        cornerRadius: 5,
+        fill: "#eab308",
+        height: 40,
+        id: "code-1722586082873",
+        isDragging: false,
+        stroke: "#eab308",
+        strokeWidth: 0.5,
+        textColor: "white",
+        width: 230,
+        x: 10,
+        y: 10,
+      },
+    ],
+    cornerRadius: 5,
+    fill: "transparent",
+    height: 150,
+    id: "box-1722584626978",
+    isDragging: false,
+    stroke: "#855cd6",
+    strokeWidth: 0.5,
+    width: 250,
+    x: 213.5,
+    y: 218.5,
+  },
+];
+
+const INITIAL_HISTORY_STATE: Box[] = [
+  {
+    children: [],
+    content: "when 🚩 clicked",
+    cornerRadius: 5,
+    fill: "#eab308",
+    height: 40,
+    id: "code-1722586082873",
+    isDragging: false,
+    stroke: "#eab308",
+    strokeWidth: 0.5,
+    textColor: "white",
+    width: 230,
+    x: 10,
+    y: 10,
+  },
+];
+
 const PADDING = 10;
 
 export default function MidArea() {
   // Default states
   const [boxes, setBoxes] = useState<Box[]>(INITIAL_STATE);
-  const [history, setHistory] = useState<Box[]>([]);
+  const [history, setHistory] = useState<Box[]>(INITIAL_HISTORY_STATE);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [isOuterBox, setIsOuterBox] = useState<boolean>(false);
+  const [isOuterBox, setIsOuterBox] = useState<boolean>(true);
   const [isOverTrash, setIsOverTrash] = useState<boolean>(false);
-  const [outerBoxId, setOuterBoxId] = useState<string | null>(null);
+  const [outerBoxId, setOuterBoxId] = useState<string | null>(
+    "box-1722584626978",
+  );
 
   // Redux states
   const selectedSprite = useSelectedSprite();
@@ -78,15 +130,21 @@ export default function MidArea() {
     });
 
     dispatch(updateSprite({ id: selectedSprite.id, updates: updatedSprite }));
+    history.forEach((item) => {
+      dispatch(addHistory(item as unknown as HistoryItem));
+    });
   };
 
   // Dispatch individual block action if not present in group
-  const handleBlockAction = (content: string | undefined) => {
+  const handleBlockAction = (content: string | undefined, id: string) => {
     if (!selectedSprite || !content || !actions[content]) return;
 
     const updatedSprite = { ...selectedSprite };
     actions[content](updatedSprite);
     dispatch(updateSprite({ id: selectedSprite.id, updates: updatedSprite }));
+
+    const clickedBlock = boxes.filter((box) => box.id === id)[0];
+    dispatch(addHistory(clickedBlock as unknown as HistoryItem));
   };
 
   // Handle drag action
@@ -128,7 +186,7 @@ export default function MidArea() {
 
     if (isOverTrash) {
       setBoxes((prevBoxes) => prevBoxes.filter((box) => box.id !== id));
-      setHistory((prevHistory) => prevHistory.filter((item) => item.id !== id));
+      setHistory((prevHistory) => prevHistory.filter((item) => item.id === id));
       if (id === outerBoxId) {
         setIsOuterBox(false);
         setOuterBoxId(null);
@@ -329,9 +387,11 @@ export default function MidArea() {
       onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       onClick={(e) => {
+        e.cancelBubble = true;
         if (box.children.length > 0) {
-          e.cancelBubble = true;
           handleDispatch();
+        } else if (box.content) {
+          handleBlockAction(box.content, box.id);
         }
       }}
     >
@@ -347,7 +407,7 @@ export default function MidArea() {
         <Group
           onClick={(e) => {
             e.cancelBubble = true;
-            handleBlockAction(box.content);
+            handleBlockAction(box.content, box.id);
           }}
         >
           <Text

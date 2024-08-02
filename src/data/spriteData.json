@@ -6,6 +6,8 @@
     "positionY": 200,
     "size": 100,
     "direction": 1,
-    "isVisible": true
+    "isVisible": true,
+    "say": "",
+    "duration": 0
   }
 ]

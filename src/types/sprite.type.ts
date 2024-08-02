@@ -1,6 +1,7 @@
 export type SpritesState = {
   sprites: SpritePropType[];
   selectedSprite: string;
+  history: HistoryItem[];
 };
 
 export type SpritePropType = {
@@ -16,6 +17,21 @@ export type SpritePropType = {
 };
 
 export type SpritePositionType = {
+  x: number;
+  y: number;
+};
+
+export type HistoryItem = {
+  content: string;
+  cornerRadius: number;
+  fill: string;
+  height: number;
+  id: string;
+  isDragging: boolean;
+  stroke: string;
+  strokeWidth: number;
+  textColor: string;
+  width: number;
   x: number;
   y: number;
 };
